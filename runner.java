@@ -9,9 +9,6 @@ public class runner
 
     public static void main(String[] args) 
     {
-
-        String[] deck = new String[packs[0].length * 3];
-
         clearScreen(9);
 
         String[] cubeList = setUp.getCube();
@@ -80,12 +77,11 @@ public class runner
                 System.out.print("Please enter the number of the card you would like to pick: ");
                 
                 int choice = scan.nextInt();
-                
-                deck[cardCount] = packs[pickNum][choice - 1][0];
+                choice--;
 
                 cardCount++;
                 
-                packs[pickNum][choice - 1] = null;
+                packs[pickNum][choice] = null;
 
                 
                 
@@ -93,8 +89,6 @@ public class runner
                 takeAiCard(i);
             }
         }
-
-        printDeck(deck);
     }
 
     public static void takeAiCard(int currentPack)
