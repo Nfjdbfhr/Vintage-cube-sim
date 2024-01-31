@@ -1,72 +1,144 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.util.Arrays;
+import java.util.Scanner;
 
-public class SetUp 
+public class runner
 {
+    public static SetUp setUp = new SetUp();
 
-    public static int cubeLength = 0;
+    public static String[][][] packs = new String[8][15][];
 
-    public static String[] getCube()
+    public static void main(String[] args) 
     {
-        String cube = "vintage_cube.txt";
+        clearScreen(9);
 
-        Path path = Path.of(cube);
+        String[] cubeList = setUp.getCube();
 
-        String line = "";
-        cubeLength = 0;
-        
-        try (BufferedReader reader = new BufferedReader(new FileReader(cube))) 
+        int cardCount = 0;
+
+        for (int p = 0; p < 3; p++)
         {
+
+            for (int i = 0; i < packs.length; i++) 
+            {
+                for (int j = 0; j < packs[i].length; j++)
+                {
+                    packs[i][j] = setUp.getCard(cubeList);
+                }
+            }
+
+            Scanner scan = new Scanner(System.in);
+        
+            for (int i = 0; i < packs[0].length; i++)
+            {
+                System.out.println();
+                System.out.println();
+                System.out.println("Pack " + (p + 1) + ": Pick " + (i + 1));
+                System.out.println();
+                System.out.println();
+                System.out.println();
+                System.out.println();
+                System.out.println();
+
+                int pickNum = i;
+
+                if (pickNum > 7)
+                {
+                    pickNum -= 8;
+                }
+
+                int packCount = 0;
+                for (int j = 0; j < packs[0].length; j++)
+                {
+                    if (packs[pickNum][j] != null)
+                    {
+                        packCount++;
+
+                        if (packCount < 10)
+                        {
+                            System.out.println(packCount + ":  " + Arrays.toString(packs[pickNum][j]));
+                        }
+                        else
+                        {
+                            System.out.println(packCount + ": " + Arrays.toString(packs[pickNum][j]));
+                        }
+                    }
+                }
                 
-            while ((line = reader.readLine()) != null) 
-            {
-                cubeLength++;
+                int spaceCount = 0;
+                
+                for (int j = 0; j < packs[pickNum].length - packCount; j++)
+                {
+                    System.out.println();
+                    spaceCount++;
+                }
+                
+                System.out.println();
+                System.out.println();
+                System.out.print("Please enter the number of the card you would like to pick: ");
+                
+                int choice = scan.nextInt();
+                choice--;
+
+                cardCount++;
+                
+                packs[pickNum][choice] = null;
+
+                
+                
+                clearScreen(packs[pickNum].length + 9 + spaceCount);
+                takeAiCard(i);
             }
-        
-            reader.close();
-            BufferedReader reader2 = new BufferedReader(new FileReader(cube));
-        
-            String[] cubeList = new String[cubeLength];
-        
-            for (int i = 0; i < cubeLength; i++) 
-            {
-                line = reader2.readLine();
-                cubeList[i] = line;
-            }
-        
-            return cubeList;
-        } 
-        catch (IOException e) 
-        {
-            return new String[0];
         }
     }
 
-    public static boolean[] usedCard;
-
-    public static String[] getCard(String[] cube)
+    public static void takeAiCard(int currentPack)
     {
-        if (usedCard == null)
+        for (int i = 0; i < packs.length; i++)
         {
-            usedCard = new boolean[cubeLength];
+            if (i != currentPack)
+            {
+                int cardToTake = 0;
+                do
+                {
+                    cardToTake = (int)(Math.random() * packs[i].length);
+                }
+                while (packs[i][cardToTake] == null);
+            
+                packs[i][cardToTake] = null;
+            }
+        }
+    }
+
+    public static void printDeck(String[] deckList)
+    {
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("Decklist");
+        System.out.println();
+        System.out.println();
+        for (int i = 0; i < deckList.length; i++)
+        {
+            System.out.println(deckList[i]);
+        }
+    }
+
+    public static void clearScreen(int upAmount)
+    {
+        for (int i = 0; i < upAmount; i++)
+        {
+            System.out.print("\033[F\r");
         }
 
-        int card = 0;
-
-        do
+        for (int i = 0; i < upAmount; i++)
         {
-            card = (int)(Math.random() * cube.length);
+            System.out.print("\033[2K");
+            System.out.println();
         }
-        while (usedCard[card]);
-
-        usedCard[card] = true;
-
-        String[] chosenCard = {cube[card]};
-
-        return chosenCard;
+        
+        for (int i = 0; i < upAmount; i++)
+        {
+            System.out.print("\033[F\r");
+        }
     }
 }
